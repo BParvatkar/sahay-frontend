@@ -43,9 +43,15 @@ export interface DetectionProps extends VariantProps<typeof badgeVariants> {
 
 interface DetectionInfoProps extends VariantProps<typeof badgeVariants> {
   detections: Array<DetectionProps>;
+  openDetection: string;
+  onClickDetection: (id: string) => void;
 }
 
-export const DetectionInfo: React.FC<DetectionInfoProps> = ({ detections }) => {
+export const DetectionInfo: React.FC<DetectionInfoProps> = ({
+  detections,
+  openDetection,
+  onClickDetection,
+}) => {
   const [api, setApi] = useState<CarouselApi>();
 
   useEffect(() => {
@@ -60,7 +66,13 @@ export const DetectionInfo: React.FC<DetectionInfoProps> = ({ detections }) => {
     });
   }, [api]);
   return (
-    <Accordion type="single" collapsible className="w-full">
+    <Accordion
+      value={openDetection}
+      onValueChange={onClickDetection}
+      type="single"
+      collapsible
+      className="w-full"
+    >
       {detections.map((detection) => (
         <AccordionItem key={detection.id} value={detection.id}>
           <AccordionTrigger className="hover:no-underline">
@@ -119,8 +131,10 @@ export const DetectionInfo: React.FC<DetectionInfoProps> = ({ detections }) => {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
+                <div className="flex justify-center">
+                  <CarouselPrevious className="relative top-0 left-0 translate-y-0" />
+                  <CarouselNext className="relative top-0 right-0 translate-y-0 ml-2" />
+                </div>
               </Carousel>
             </div>
           </AccordionContent>

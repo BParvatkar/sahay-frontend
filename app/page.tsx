@@ -1,3 +1,5 @@
+"use client";
+import VisGlMap from "@/components/custom/VisGlMap";
 import {
   DetectionInfo,
   DetectionProps,
@@ -9,91 +11,15 @@ import { Button } from "@/components/ui/button";
 import MedKit from "@/public/med-kit.svg";
 import WarningFilled from "@/public/warning-filled.svg";
 import Warning from "@/public/warning.svg";
-
-const runs = [
-  {
-    label: "01 Mar 24",
-    value: "01 Mar 24",
-  },
-  {
-    label: "02 Mar 24",
-    value: "02 Mar 24",
-  },
-  {
-    label: "03 Mar 24",
-    value: "03 Mar 24",
-  },
-  {
-    label: "04 Mar 24",
-    value: "04 Mar 24",
-  },
-  {
-    label: "05 Mar 24",
-    value: "05 Mar 24",
-  },
-  {
-    label: "06 Mar 24",
-    value: "06 Mar 24",
-  },
-];
-
-const detections: Array<DetectionProps> = [
-  {
-    id: "1",
-    title: "Tree on track",
-    variant: "destructive",
-    variantLabel: "Fault",
-    detectionDate: "01 Mar 24",
-    coordinate: {
-      latitude: 23.34,
-      longitude: 43.54,
-    },
-  },
-  {
-    id: "2",
-    title: "Tree on track",
-    variant: "destructive",
-    variantLabel: "Fault",
-    detectionDate: "01 Mar 24",
-    coordinate: {
-      latitude: 23.34,
-      longitude: 43.54,
-    },
-  },
-  {
-    id: "3",
-    title: "Tree on track",
-    variant: "secondary",
-    variantLabel: "Object",
-    detectionDate: "01 Mar 24",
-    coordinate: {
-      latitude: 23.34,
-      longitude: 43.54,
-    },
-  },
-  {
-    id: "4",
-    title: "Tree on track",
-    variant: "secondary",
-    variantLabel: "Object",
-    detectionDate: "01 Mar 24",
-    coordinate: {
-      latitude: 23.34,
-      longitude: 43.54,
-    },
-  },
-  {
-    id: "5",
-    title: "Tree on track",
-    variant: "secondary",
-    variantLabel: "Object",
-    detectionDate: "01 Mar 24",
-    coordinate: {
-      latitude: 23.34,
-      longitude: 43.54,
-    },
-  },
-];
+import { APIProvider } from "@vis.gl/react-google-maps";
+import GeoJSONTest from "@/data/test.geo.json";
+import {
+  useFetchTrackDetections,
+  useFetchTrackInfo,
+  useFetchTrackRuns,
+  useTrackData,
+} from "./hooks";
+import { useState } from "react";
 
 const SectionTitle = ({ title }: { title: string }) => {
   return (
@@ -104,48 +30,116 @@ const SectionTitle = ({ title }: { title: string }) => {
 };
 
 export default function Home() {
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const {
+    selectedTrackId,
+    selectedRunId,
+    onSelectTrackId,
+    onSelectRunId,
+    selectedDetectionId,
+    onSelectDetection,
+  } = useTrackData();
+  const { data: trackInfo } = useFetchTrackInfo(selectedTrackId);
+  const { data: trackRuns } = useFetchTrackRuns(selectedTrackId);
+  const { data: trackDetections } = useFetchTrackDetections(
+    selectedTrackId,
+    selectedRunId
+  );
+
+  const handleOnClickTrack = (trackId: string) => {
+    onSelectTrackId(trackId);
+  };
+
+  const handleOnSelectRun = (runValue: string) => {
+    onSelectRunId(runValue);
+  };
   return (
     <main>
-      <Sidebar>
-        <div className="sticky top-0 bg-white py-2 px-4 border-indigo-500">
-          <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-            Market Frankford Line (L)
-          </h3>
-        </div>
-        <div className="px-4">
-          <div className="flex flex-wrap gap-4">
-            <TrackInfoCard
-              icon={<MedKit height="1rem" width="1rem" />}
-              title="Track Health"
-              label="8"
-            />
-            <TrackInfoCard
-              icon={
-                <WarningFilled
-                  height="1rem"
-                  width="1rem"
-                  color="rgb(225 29 72)"
-                />
-              }
-              title="Total Faults"
-              label="8"
-            />
-            <TrackInfoCard
-              icon={<Warning height="1rem" width="1rem" color="#000" />}
-              title="Total Objects"
-              label="8"
-            />
-          </div>
-          <SectionTitle title="Runs" />
-          <SelectRun
-            placeholder="Select a run"
-            emptySearchLabel="No runs found"
-            runs={runs}
+      <APIProvider apiKey={apiKey || ""}>
+        <div className="h-screen w-1/2 lg:w-2/3">
+          <VisGlMap
+            geoJson={GeoJSONTest}
+            position={{ lat: 39.9727508, lng: -75.2364587 }}
+            onClickTrack={handleOnClickTrack}
+            detections={trackDetections || []}
+            selectedTrackId={selectedTrackId}
+            selectedRunId={selectedRunId}
+            onClickDetectionMarker={onSelectDetection}
+            selectedDetectionId={selectedDetectionId}
           />
-          <SectionTitle title="Detections" />
-          <DetectionInfo detections={detections} />
         </div>
-      </Sidebar>
+        <Sidebar>
+          {trackInfo !== undefined && (
+            <>
+              <div className="sticky top-0 bg-white py-2 px-4 border-b border-slate-200 z-1">
+                <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+                  {trackInfo.name}
+                </h3>
+              </div>
+              <div className="px-4">
+                <div className="flex flex-wrap gap-x-12">
+                  <TrackInfoCard
+                    icon={<MedKit height="1rem" width="1rem" />}
+                    title="Track Health"
+                    label="8"
+                  />
+                  <TrackInfoCard
+                    icon={
+                      <WarningFilled
+                        height="1rem"
+                        width="1rem"
+                        color="rgb(225 29 72)"
+                      />
+                    }
+                    title="Total Faults"
+                    label={`${trackInfo.total_faults}`}
+                  />
+                  <TrackInfoCard
+                    icon={<Warning height="1rem" width="1rem" color="#000" />}
+                    title="Total Objects"
+                    label={`${trackInfo.total_objects}`}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+          {trackRuns !== undefined && (
+            <div className="px-4">
+              <SectionTitle title="Inspection Runs" />
+              <SelectRun
+                placeholder="Select a run"
+                emptySearchLabel="No runs found"
+                runs={trackRuns}
+                selectedRun={selectedRunId}
+                onSelectedRun={handleOnSelectRun}
+              />
+            </div>
+          )}
+          {trackDetections !== undefined && (
+            <div className="px-4">
+              <SectionTitle title="Detections" />
+              <DetectionInfo
+                detections={trackDetections.map((detection) => ({
+                  id: detection.id,
+                  title: detection.title,
+                  detectionDate: detection.detectionDate,
+                  coordinate: detection.coordinate,
+                  variantLabel: detection.variantLabel,
+                  variant: detection.variant as
+                    | "default"
+                    | "secondary"
+                    | "destructive"
+                    | "outline"
+                    | null
+                    | undefined,
+                }))}
+                openDetection={selectedDetectionId}
+                onClickDetection={onSelectDetection}
+              />
+            </div>
+          )}
+        </Sidebar>
+      </APIProvider>
     </main>
   );
 }

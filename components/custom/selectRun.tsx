@@ -26,15 +26,18 @@ interface SelectRunProps {
   placeholder: string;
   emptySearchLabel: string;
   runs: Array<Run>;
+  selectedRun?: string;
+  onSelectedRun: (run: string) => void;
 }
 
 const SelectRun: React.FC<SelectRunProps> = ({
   placeholder,
   emptySearchLabel,
   runs,
+  selectedRun,
+  onSelectedRun,
 }) => {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -45,7 +48,9 @@ const SelectRun: React.FC<SelectRunProps> = ({
           aria-expanded={open}
           className="w-[200px] justify-between"
         >
-          {value ? runs.find((run) => run.value === value)?.label : placeholder}
+          {selectedRun
+            ? runs.find((run) => run.value === selectedRun)?.label
+            : placeholder}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -60,7 +65,7 @@ const SelectRun: React.FC<SelectRunProps> = ({
                   key={run.value}
                   value={run.value}
                   onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                    onSelectedRun(currentValue);
                     setOpen(false);
                   }}
                 >
