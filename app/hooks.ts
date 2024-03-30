@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import TrackInfo from "@/data/trackInfo.json";
 import Runs from "@/data/runs.json";
 import Detections from "@/data/detections.json";
+import ImageDetections from "@/data/imageDetections.json";
 import { useEffect, useState } from "react";
 
 interface TrackInfo {
@@ -27,6 +28,19 @@ export interface Detection {
     latitude: number;
     longitude: number;
   };
+}
+
+export interface ImageDetection {
+  id: string;
+  detection_id: string;
+  title: string;
+  variant: string;
+  variantLabel: string;
+  status: string;
+}
+export interface ImageDetectionResponse {
+  image_id: string;
+  detections: Array<ImageDetection>;
 }
 
 export const useFetchTrackInfo = (trackId?: string) =>
@@ -80,11 +94,28 @@ export const useFetchTrackDetections = (trackId?: string, runId?: string) =>
     enabled: !!trackId && !!runId,
   });
 
+export const useFetchImageDetections = (
+  trackId?: string,
+  runId?: string,
+  imageId?: number
+) =>
+  useQuery({
+    queryKey: ["imageDetections", trackId, runId, imageId],
+    queryFn: () => {
+      return new Promise<ImageDetectionResponse>((resolve) => {
+        setTimeout(() => {
+          resolve(ImageDetections);
+        }, 300);
+      });
+    },
+    enabled: !!trackId && !!runId && imageId !== undefined,
+  });
 export const useTrackData = () => {
   const [selectedTrackId, setSelectedTrackId] = useState<string>();
   const [selectedRunId, setSelectedRunId] = useState<string>();
   const [selectedDetectionId, setSelectedDetectionId] = useState<string>("");
-  const onSelectTrackId = (trackId: string) => {
+
+  const onSelectTrackId = (trackId?: string) => {
     setSelectedTrackId(trackId);
     setSelectedRunId(undefined);
     setSelectedDetectionId("");

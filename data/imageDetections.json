@@ -1,0 +1,45 @@
+{
+  "image_id": "string",
+  "detections": [
+    {
+      "id": "7c9b28ab-d0f1-4a2b-80e2-22178d02fcef",
+      "detection_id": "7c9b28ab-d0f1-4a2b-80e2-22178d02fcef",
+      "title": "Defective Drainage",
+      "variant": "destructive",
+      "variantLabel": "Fault",
+      "status": "Pending"
+    },
+    {
+      "id": "e24d1f1a-e84d-4fba-b9e0-d22c17f2f1f3",
+      "detection_id": "e24d1f1a-e84d-4fba-b9e0-d22c17f2f1f3",
+      "title": "Debris on Tracks",
+      "variant": "destructive",
+      "variantLabel": "Fault",
+      "status": "Pending"
+    },
+    {
+      "id": "1a02b34d-d48e-4e23-920b-778e2f123b1a",
+      "detection_id": "1a02b34d-d48e-4e23-920b-778e2f123b1a",
+      "title": "Signal Interference",
+      "variant": "destructive",
+      "variantLabel": "Fault",
+      "status": "Reviewed"
+    },
+    {
+      "id": "8f3c5bdb-27f2-4d1d-b08e-d02b7f1ba9e2",
+      "detection_id": "8f3c5bdb-27f2-4d1d-b08e-d02b7f1ba9e2",
+      "title": "Track Circuit Malfunction",
+      "variant": "secondary",
+      "variantLabel": "Object",
+      "status": "Pending"
+    },
+    {
+      "id": "d1ca7e23-a01b-4e1c-a0f2-1cb08e2cada3",
+      "detection_id": "d1ca7e23-a01b-4e1c-a0f2-1cb08e2cada3",
+      "title": "Tunnel Leak",
+      "variant": "secondary",
+      "variantLabel": "Object",
+      "status": "Pending"
+    }
+  ]
+}

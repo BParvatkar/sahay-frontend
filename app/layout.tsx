@@ -1,11 +1,9 @@
 "use client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { useState } from "react";
-
-const inter = Inter({ subsets: ["latin"] });
+import { GeistSans } from "geist/font/sans";
 
 export default function RootLayout({
   children,
@@ -15,7 +13,7 @@ export default function RootLayout({
   const [queryClient] = useState(new QueryClient());
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={GeistSans.className}>
         <QueryClientProvider client={queryClient}>
           {children}
           <ReactQueryDevtools initialIsOpen={false} />

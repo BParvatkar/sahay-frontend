@@ -19,7 +19,9 @@ import {
   useFetchTrackRuns,
   useTrackData,
 } from "./hooks";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import NavigationBar from "@/components/custom/navigationBar";
+import CrossIcon from "@/public/cross.svg";
 
 const SectionTitle = ({ title }: { title: string }) => {
   return (
@@ -27,6 +29,11 @@ const SectionTitle = ({ title }: { title: string }) => {
       {title}
     </h4>
   );
+};
+
+const MapStyles = {
+  fullScreen: "h-screen w-screen",
+  trackSelected: "h-screen w-1/2 lg:w-2/3",
 };
 
 export default function Home() {
@@ -46,6 +53,11 @@ export default function Home() {
     selectedRunId
   );
 
+  const isSidebarOpen = useMemo(
+    () => selectedTrackId !== undefined,
+    [selectedTrackId]
+  );
+
   const handleOnClickTrack = (trackId: string) => {
     onSelectTrackId(trackId);
   };
@@ -53,10 +65,19 @@ export default function Home() {
   const handleOnSelectRun = (runValue: string) => {
     onSelectRunId(runValue);
   };
+
+  const handleCloseSidebar = () => {
+    onSelectTrackId();
+  };
   return (
     <main>
+      <NavigationBar />
       <APIProvider apiKey={apiKey || ""}>
-        <div className="h-screen w-1/2 lg:w-2/3">
+        <div
+          className={
+            isSidebarOpen ? MapStyles.trackSelected : MapStyles.fullScreen
+          }
+        >
           <VisGlMap
             geoJson={GeoJSONTest}
             position={{ lat: 39.9727508, lng: -75.2364587 }}
@@ -68,13 +89,19 @@ export default function Home() {
             selectedDetectionId={selectedDetectionId}
           />
         </div>
-        <Sidebar>
+        <Sidebar isOpen={isSidebarOpen}>
           {trackInfo !== undefined && (
             <>
-              <div className="sticky top-0 bg-white py-2 px-4 border-b border-slate-200 z-1">
-                <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-                  {trackInfo.name}
-                </h3>
+              <div className="sticky top-0 bg-white py-2 px-4 border-b border-slate-200 z-10">
+                <div className="flex justify-between items-center">
+                  <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+                    {trackInfo.name}
+                  </h3>
+                  <CrossIcon
+                    className="h-5 w-5 cursor-pointer fill-gray-700"
+                    onClick={handleCloseSidebar}
+                  />
+                </div>
               </div>
               <div className="px-4">
                 <div className="flex flex-wrap gap-x-12">
@@ -119,6 +146,8 @@ export default function Home() {
             <div className="px-4">
               <SectionTitle title="Detections" />
               <DetectionInfo
+                selectedTrackId={selectedTrackId}
+                selectedRunId={selectedRunId}
                 detections={trackDetections.map((detection) => ({
                   id: detection.id,
                   title: detection.title,
