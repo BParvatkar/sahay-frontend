@@ -20,6 +20,7 @@ import { Detection } from "@/app/hooks";
 
 interface VisGlMapProps {
   geoJson: object;
+  mapStyle: object;
   position: google.maps.LatLngLiteral;
   onClickTrack: (trackId: string) => void;
   detections: Array<Detection>;
@@ -41,6 +42,10 @@ const AdvancedMarkerColorVariants: any = {
     secondary:
       "rounded-md min-w-8 min-h-6 flex bg-gray-300 justify-center items-center relative z-10 p-2 text-black font-medium",
   },
+  contentVisibility: {
+    hidden: "hidden group-hover:block",
+    visible: "block",
+  },
   arrow: {
     destructive: "w-3 h-3 -mt-2 mx-auto bg-red-600 rotate-45",
     secondary: "w-3 h-3 -mt-2 mx-auto bg-gray-300 rotate-45",
@@ -49,6 +54,7 @@ const AdvancedMarkerColorVariants: any = {
 
 const VisGlMap: React.FC<VisGlMapProps> = ({
   geoJson,
+  mapStyle,
   position,
   onClickTrack,
   selectedTrackId,
@@ -104,7 +110,7 @@ const VisGlMap: React.FC<VisGlMapProps> = ({
   }, [map, geoJson]);
 
   return (
-    <Map defaultCenter={position} defaultZoom={12} mapId="1b6f2ba15010723c">
+    <Map defaultCenter={position} defaultZoom={12} mapId="fa6d42066208f3c7">
       {detections.map((detection, index) => (
         <AdvancedMarker
           key={`advancedMarker-${detection.id}`}
@@ -118,7 +124,15 @@ const VisGlMap: React.FC<VisGlMapProps> = ({
             <div
               className={AdvancedMarkerColorVariants.body[detection.variant]}
             >
-              <div className="hidden group-hover:block">{detection.title}</div>
+              <div
+                className={
+                  AdvancedMarkerColorVariants.contentVisibility[
+                    selectedDetectionId === detection?.id ? "visible" : "hidden"
+                  ]
+                }
+              >
+                {detection.title}
+              </div>
             </div>
             <div
               className={AdvancedMarkerColorVariants.arrow[detection.variant]}

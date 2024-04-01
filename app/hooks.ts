@@ -126,7 +126,9 @@ export const useTrackData = () => {
   };
 
   const onSelectDetection = (detectionId: string) => {
-    setSelectedDetectionId((prevValue) => (!!prevValue ? "" : detectionId));
+    setSelectedDetectionId((prevValue) =>
+      !!prevValue && prevValue === detectionId ? "" : detectionId
+    );
   };
   return {
     selectedTrackId,

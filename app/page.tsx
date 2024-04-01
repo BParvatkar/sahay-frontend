@@ -11,8 +11,10 @@ import { Button } from "@/components/ui/button";
 import MedKit from "@/public/med-kit.svg";
 import WarningFilled from "@/public/warning-filled.svg";
 import Warning from "@/public/warning.svg";
+import UserSettings from "@/public/user-settings.svg";
 import { APIProvider } from "@vis.gl/react-google-maps";
 import GeoJSONTest from "@/data/test.geo.json";
+import MapStyle from "@/data/mapStyle.json";
 import {
   useFetchTrackDetections,
   useFetchTrackInfo,
@@ -80,7 +82,8 @@ export default function Home() {
         >
           <VisGlMap
             geoJson={GeoJSONTest}
-            position={{ lat: 39.9727508, lng: -75.2364587 }}
+            mapStyle={MapStyle}
+            position={{ lat: 39.9727508, lng: -75.1364587 }}
             onClickTrack={handleOnClickTrack}
             detections={trackDetections || []}
             selectedTrackId={selectedTrackId}
@@ -133,6 +136,12 @@ export default function Home() {
           {trackRuns !== undefined && (
             <div className="px-4">
               <SectionTitle title="Inspection Runs" />
+              <TrackInfoCard
+                icon={<UserSettings height="1rem" width="1rem" />}
+                title="Inspector Name"
+                label="John Doe"
+                className="pt-0 pb-4"
+              />
               <SelectRun
                 placeholder="Select a run"
                 emptySearchLabel="No runs found"
