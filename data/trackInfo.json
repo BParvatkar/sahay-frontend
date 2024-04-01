@@ -1,0 +1,16 @@
+[
+  {
+    "id": "a5d672e5-678d-4912-b31d-67a77a1affcf",
+    "name": "Market-Frankford Line",
+    "health": 8,
+    "total_faults": 5,
+    "total_objects": 14
+  },
+  {
+    "id": "819055e1-1183-4ab9-9855-b369d76ac25a",
+    "name": "Broad Street Local",
+    "health": 48,
+    "total_faults": 2,
+    "total_objects": 9
+  }
+]

@@ -1,0 +1,108 @@
+[
+  {
+    "trackId": "a5d672e5-678d-4912-b31d-67a77a1affcf",
+    "detections": [
+      {
+        "id": "1",
+        "title": "Sun kink",
+        "variant": "destructive",
+        "variantLabel": "Fault",
+        "detectionDate": "01 Mar 24",
+        "coordinate": {
+          "latitude": 39.99791223203856,
+          "longitude": -75.11073896870998
+        },
+        "image": "defect_sunkink.jpg"
+      },
+      {
+        "id": "2",
+        "title": "Fouled Ballast",
+        "variant": "destructive",
+        "variantLabel": "Fault",
+        "detectionDate": "01 Mar 24",
+        "coordinate": {
+          "latitude": 39.97564568646992,
+          "longitude": -75.13417785078278
+        },
+        "image": "defect_fouled_ballast.jpeg"
+      },
+      {
+        "id": "5",
+        "title": "Signals",
+        "variant": "secondary",
+        "variantLabel": "Object",
+        "detectionDate": "01 Mar 24",
+        "coordinate": {
+          "latitude": 39.956327138660114,
+          "longitude": -75.19535868045338
+        },
+        "image": "object_signals.jpeg"
+      },
+      {
+        "id": "6",
+        "title": "Overhead Wires",
+        "variant": "secondary",
+        "variantLabel": "Object",
+        "detectionDate": "01 Mar 24",
+        "coordinate": {
+          "latitude": 40.0117686516084,
+          "longitude": -75.08828268069374
+        },
+        "image": "object_overheadwires.jpg"
+      }
+    ]
+  },
+  {
+    "trackId": "819055e1-1183-4ab9-9855-b369d76ac25a",
+    "detections": [
+      {
+        "id": "11",
+        "title": "Sun kink",
+        "variant": "destructive",
+        "variantLabel": "Fault",
+        "detectionDate": "01 Mar 24",
+        "coordinate": {
+          "latitude": 40.03434387312809,
+          "longitude": -75.14576610270457
+        },
+        "image": "defect_sunkink.jpg"
+      },
+      {
+        "id": "12",
+        "title": "Fouled Ballast",
+        "variant": "destructive",
+        "variantLabel": "Fault",
+        "detectionDate": "01 Mar 24",
+        "coordinate": {
+          "latitude": 40.000955509401905,
+          "longitude": -75.15297236098671
+        },
+        "image": "defect_fouled_ballast.jpeg"
+      },
+      {
+        "id": "13",
+        "title": "Switch",
+        "variant": "secondary",
+        "variantLabel": "Object",
+        "detectionDate": "01 Mar 24",
+        "coordinate": {
+          "latitude": 39.9762278913831,
+          "longitude": -75.15850365440315
+        },
+        "image": "object_switch.jpg"
+      },
+      {
+        "id": "14",
+        "title": "Vegetation Overgrowth",
+        "variant": "secondary",
+        "variantLabel": "Object",
+        "detectionDate": "01 Mar 24",
+        "coordinate": {
+          "latitude": 39.92825874654974,
+          "longitude": -75.1689069367731
+        },
+        "image": "defect_vegetation_overgrowth.jpg"
+      }
+    ]
+  }
+]

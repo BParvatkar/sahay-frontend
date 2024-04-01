@@ -1,113 +1,156 @@
-import Image from "next/image";
+"use client";
+import VisGlMap from "@/components/custom/VisGlMap";
+import {
+  DetectionInfo,
+  DetectionProps,
+} from "@/components/custom/detectionsInfo";
+import { SelectRun } from "@/components/custom/selectRun";
+import Sidebar from "@/components/custom/sidebar";
+import TrackInfoCard from "@/components/custom/trackInfoCard";
+import { Button } from "@/components/ui/button";
+import MedKit from "@/public/med-kit.svg";
+import WarningFilled from "@/public/warning-filled.svg";
+import Warning from "@/public/warning.svg";
+import UserSettings from "@/public/user-settings.svg";
+import { APIProvider } from "@vis.gl/react-google-maps";
+import GeoJSONTest from "@/data/test.geo.json";
+import MapStyle from "@/data/mapStyle.json";
+import {
+  useFetchTrackDetections,
+  useFetchTrackInfo,
+  useFetchTrackRuns,
+  useTrackData,
+} from "./hooks";
+import { useEffect, useMemo, useState } from "react";
+import NavigationBar from "@/components/custom/navigationBar";
+import CrossIcon from "@/public/cross.svg";
+import { cn } from "@/lib/utils";
+
+const SectionTitle = ({ title }: { title: string }) => {
+  return (
+    <h4 className="scroll-m-20 text-xl font-semibold tracking-tight my-4">
+      {title}
+    </h4>
+  );
+};
+
+const MapStyles = {
+  fullScreen: "h-[calc(100vh-4rem-2px)] w-screen",
+  trackSelected: "h-[calc(100vh-4rem-2px)] w-1/2 lg:w-2/3",
+};
+
+const MapPathStyles: Record<string, string> = {
+  "Market-Frankford Line": "bg-[#019ade]",
+  "Broad Street Local": "bg-[#fa6400]",
+};
 
 export default function Home() {
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  const {
+    selectedTrackId,
+    selectedRunId,
+    onSelectTrackId,
+    onSelectRunId,
+    selectedDetectionId,
+    onSelectDetection,
+  } = useTrackData();
+  const { data: trackInfo } = useFetchTrackInfo(selectedTrackId);
+  const { data: trackRuns } = useFetchTrackRuns(selectedTrackId);
+  const { data: trackDetections } = useFetchTrackDetections(
+    selectedTrackId,
+    selectedRunId
+  );
+  const [isOpenToast, setIsOpenToast] = useState(false);
+
+  const isSidebarOpen = useMemo(
+    () => selectedTrackId !== undefined,
+    [selectedTrackId]
+  );
+
+  useEffect(() => {
+    setIsOpenToast(true);
+  }, []);
+  const handleOnClickTrack = (trackId: string) => {
+    onSelectTrackId(trackId);
+  };
+
+  const handleOnSelectRun = (runValue: string) => {
+    onSelectRunId(runValue);
+  };
+
+  const handleCloseSidebar = () => {
+    onSelectTrackId();
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.tsx</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main>
+      <NavigationBar />
+      <APIProvider apiKey={apiKey || ""}>
+        <div className="w-full relative">
+          <div
+            className={cn([
+              isSidebarOpen ? MapStyles.trackSelected : MapStyles.fullScreen,
+              "relative",
+            ])}
           >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
+            {isOpenToast && (
+              <div className="relative">
+                <div className="absolute top-2 ml-auto mr-auto bg-white text-center z-20 inset-0 w-max bg-white h-min px-3 py-3 rounded-md font-medium drop-shadow-lg ">
+                  <div className="flex items-center">
+                    <div className="mr-2">Please hover on a track</div>
+                    <CrossIcon
+                      fill="gray-600"
+                      height="16"
+                      className="cursor-pointer"
+                      onClick={() => setIsOpenToast(false)}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+            <VisGlMap
+              geoJson={GeoJSONTest}
+              mapStyle={MapStyle}
+              position={{ lat: 39.9727508, lng: -75.1364587 }}
+              onClickTrack={handleOnClickTrack}
+              detections={trackDetections || []}
+              selectedTrackId={selectedTrackId}
+              selectedRunId={selectedRunId}
+              onClickDetectionMarker={onSelectDetection}
+              selectedDetectionId={selectedDetectionId}
             />
-          </a>
+          </div>
+
+          <Sidebar
+            isOpen={isSidebarOpen}
+            trackInfo={trackInfo}
+            handleCloseSidebar={handleCloseSidebar}
+            trackRuns={trackRuns}
+            selectedRunId={selectedRunId}
+            handleOnSelectRun={handleOnSelectRun}
+            trackDetections={trackDetections}
+            selectedTrackId={selectedTrackId}
+            selectedDetectionId={selectedDetectionId}
+            onSelectDetection={onSelectDetection}
+          />
+          <div className="absolute left-0 bottom-0 bg-white p-4 text-sm shadow-lg shadow-gray-400">
+            <div className="font-semibold">Legends</div>
+            <div className="flex flex-col gap-y-2 mt-2">
+              {GeoJSONTest.features.map((feature) => (
+                <div key={feature.id} className="flex items-center">
+                  <div
+                    className={cn([
+                      "w-8 h-1  ",
+                      MapPathStyles[feature.properties.name],
+                    ])}
+                  />
+                  <div className="ml-2"> {feature.properties.name}</div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
-
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-full sm:before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full sm:after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px] z-[-1]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className="mb-32 grid text-center lg:max-w-5xl lg:w-full lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore starter templates for Next.js.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{" "}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50 text-balance`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      </APIProvider>
     </main>
   );
 }
